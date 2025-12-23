@@ -1,0 +1,17 @@
+# PyPie-Lang Demo File
+# This file demonstrates the basic syntax of PyPie-Lang
+
+# Simple atom
+(the Atom 'hello)
+
+# Pair construction
+(cons 'first 'second)
+
+# Typed pair
+(the (Pair Atom Atom) (cons 'a 'b))
+
+# Nested pairs
+(cons (cons 'x 'y) 'z)
+
+# Complex nested structure
+(cons (cons 'name 'Alice) (cons 'age 'thirty))

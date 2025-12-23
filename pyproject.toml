@@ -1,13 +1,16 @@
 [project]
 name = "pypie-lang"
 version = "0.1.0"
-description = "Add your description here"
+description = "A Python implementation of the Pie language"
 readme = "README.md"
 authors = [
     { name = "Timothy Williams", email = "7538854+tim-br@users.noreply.github.com" }
 ]
 requires-python = ">=3.13"
 dependencies = []
+
+[project.scripts]
+pypie = "pypie_lang.cli:main"
 
 [build-system]
 requires = ["uv_build>=0.8.0,<0.9"]
