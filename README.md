@@ -27,8 +27,12 @@ pypie> (the Atom 'hello)
 Atom('hello)
 pypie> (cons 'a 'b)
 Pair('a, 'b)
-pypie> (the (Pair Atom Atom) (cons 'first 'second))
-Pair('first, 'second)
+pypie> zero
+zero
+pypie> (add1 (add1 zero))
+(add1 (add1 zero))
+pypie> 5
+(add1 (add1 (add1 (add1 (add1 zero)))))
 pypie> quit
 Goodbye!
 ```
@@ -50,7 +54,7 @@ uv run pypie -e "(cons 'a 'b)"
 Create a `.pie` file with expressions (one per line):
 
 ```pie
-# example.pie
+# examples/demo.pie
 (the Atom 'hello)
 (cons 'first 'second)
 (the (Pair Atom Atom) (cons 'a 'b))
@@ -59,7 +63,7 @@ Create a `.pie` file with expressions (one per line):
 Run it with the `-f` flag:
 
 ```bash
-uv run pypie -f example.pie
+uv run pypie -f examples/demo.pie
 # Output:
 # Atom('hello)
 # Pair('first, 'second)
@@ -68,8 +72,16 @@ uv run pypie -f example.pie
 
 ### Language Features
 
-- **Atoms**: `(the Atom 'value)`
-- **Pairs**: `(cons first second)` or `(the (Pair Type1 Type2) (cons first second))`
+- **Atoms**: Quoted values like `'hello`
+  - Type annotation: `(the Atom 'value)`
+- **Pairs**: Constructed with `cons`
+  - Simple: `(cons 'first 'second)`
+  - Type annotation: `(the (Pair Atom Atom) (cons 'a 'b))`
+- **Natural Numbers**: Peano-style natural numbers
+  - Zero: `zero` or `(zero)` or literal `0`
+  - Successor: `(add1 zero)` for 1, `(add1 (add1 zero))` for 2, etc.
+  - Numeric literals: `5` (equivalent to `(add1 (add1 (add1 (add1 (add1 zero)))))`)
+  - Type annotation: `(the Nat 3)`
 - **Comments**: Lines starting with `#` or `;` (in files)
 
 ## Development

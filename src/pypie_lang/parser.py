@@ -1,45 +1,7 @@
 import io
 
 from pypie_lang.tokenizer import Tokenizer
-
-
-class Atom:
-    def __init__(self, value: str):
-        self.value = value
-
-    def __str__(self):
-        return f"Atom({self.value})"
-
-    def __eq__(self, other):
-        if isinstance(other, Atom):
-            return self.value == other.value
-        return False
-
-    def __repr__(self):
-        return self.__str__()
-
-
-class Pair[T1, T2]:
-    def __init__(self, first: T1, second: T2):
-        self.first = first
-        self.second = second
-
-    def fst(self):
-        return self.first
-
-    def snd(self):
-        return self.second
-
-    def __str__(self):
-        return f"Pair({self.first}, {self.second})"
-
-    def __eq__(self, other):
-        if isinstance(other, Pair):
-            return self.first == other.first and self.second == other.second
-        return False
-
-    def __repr__(self):
-        return self.__str__()
+from pypie_lang.types import Atom, Nat, Pair
 
 
 class PieParser:
@@ -115,9 +77,30 @@ class PieParser:
                                 f"got {type(value_expr).__name__}"
                             )
                         return value_expr
+                    elif type_expr == "Nat":
+                        # Nat type must have zero, add1, or int literal
+                        if not isinstance(value_expr, Nat):
+                            raise ValueError(
+                                f"Type error: (the Nat ...) requires a natural number, "
+                                f"got {type(value_expr).__name__}"
+                            )
+                        return value_expr
                     else:
                         # For other types, return the value as-is
                         return value_expr
+
+                elif keyword == "zero":
+                    # Parse zero: (zero) but we also allow just 'zero
+                    self.tokenizer.munch(")")
+                    return Nat.zero()
+
+                elif keyword == "add1":
+                    # Parse add1: (add1 n)
+                    n = self.parse_expression()
+                    self.tokenizer.munch(")")
+                    if not isinstance(n, Nat):
+                        raise ValueError(f"add1 requires a Nat, got {type(n).__name__}")
+                    return Nat.add1(n)
 
                 elif keyword == "cons":
                     # Parse cons expression: (cons first second)
@@ -136,3 +119,20 @@ class PieParser:
         if ch == "'":
             return_value = "'" + self.parse_atom()
             return return_value
+
+        # Check for numeric literal or bare word like "zero"
+        if ch and (ch.isdigit() or ch.isalpha()):
+            word = self.parse_word()
+
+            # Check if it's "zero"
+            if word == "zero":
+                return Nat.zero()
+
+            # Check if it's a number
+            if word.isdigit():
+                return Nat(int(word))
+
+            # Otherwise it's an unknown symbol
+            raise ValueError(f"Unknown symbol: {word}")
+
+        return None

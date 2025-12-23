@@ -1,6 +1,7 @@
 import unittest
 
-from pypie_lang.parser import Atom, Pair, PieParser
+from pypie_lang.parser import PieParser
+from pypie_lang.types import Atom, Nat, Pair
 
 
 class TestBasic(unittest.TestCase):
@@ -75,3 +76,78 @@ class TestBasic(unittest.TestCase):
         with self.assertRaises(ValueError) as context:
             parser.parse_expression()
         self.assertIn("requires a quoted atom", str(context.exception))
+
+    def test_nat_zero(self):
+        """Test parsing zero."""
+        expression = "zero"
+        parser = PieParser(expression)
+        result = parser.parse_expression()
+        self.assertIsInstance(result, Nat)
+        self.assertEqual(result.to_int(), 0)
+        self.assertEqual(str(result), "zero")
+
+    def test_nat_zero_parens(self):
+        """Test parsing (zero)."""
+        expression = "(zero)"
+        parser = PieParser(expression)
+        result = parser.parse_expression()
+        self.assertIsInstance(result, Nat)
+        self.assertEqual(result.to_int(), 0)
+
+    def test_nat_add1(self):
+        """Test parsing (add1 zero)."""
+        expression = "(add1 zero)"
+        parser = PieParser(expression)
+        result = parser.parse_expression()
+        self.assertIsInstance(result, Nat)
+        self.assertEqual(result.to_int(), 1)
+        self.assertEqual(str(result), "(add1 zero)")
+
+    def test_nat_add1_nested(self):
+        """Test parsing (add1 (add1 (add1 zero)))."""
+        expression = "(add1 (add1 (add1 zero)))"
+        parser = PieParser(expression)
+        result = parser.parse_expression()
+        self.assertIsInstance(result, Nat)
+        self.assertEqual(result.to_int(), 3)
+        self.assertEqual(str(result), "(add1 (add1 (add1 zero)))")
+
+    def test_nat_literal(self):
+        """Test parsing numeric literal 5."""
+        expression = "5"
+        parser = PieParser(expression)
+        result = parser.parse_expression()
+        self.assertIsInstance(result, Nat)
+        self.assertEqual(result.to_int(), 5)
+
+    def test_nat_literal_zero(self):
+        """Test parsing numeric literal 0."""
+        expression = "0"
+        parser = PieParser(expression)
+        result = parser.parse_expression()
+        self.assertIsInstance(result, Nat)
+        self.assertEqual(result.to_int(), 0)
+
+    def test_the_nat(self):
+        """Test (the Nat 3) syntax."""
+        expression = "(the Nat 3)"
+        parser = PieParser(expression)
+        result = parser.parse_expression()
+        self.assertIsInstance(result, Nat)
+        self.assertEqual(result.to_int(), 3)
+
+    def test_the_nat_zero(self):
+        """Test (the Nat zero) syntax."""
+        expression = "(the Nat zero)"
+        parser = PieParser(expression)
+        result = parser.parse_expression()
+        self.assertIsInstance(result, Nat)
+        self.assertEqual(result.to_int(), 0)
+
+    def test_the_nat_with_atom(self):
+        """Test (the Nat 'foo) should fail."""
+        expression = "(the Nat 'foo)"
+        parser = PieParser(expression)
+        with self.assertRaises(ValueError) as context:
+            parser.parse_expression()
+        self.assertIn("requires a natural number", str(context.exception))

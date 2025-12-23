@@ -15,3 +15,10 @@
 
 # Complex nested structure
 (cons (cons 'name 'Alice) (cons 'age 'thirty))
+
+# Natural numbers
+zero
+(add1 zero)
+(add1 (add1 (add1 zero)))
+5
+(the Nat 10)
