@@ -1,12 +1,10 @@
-import io
-
-
 class Tokenizer:
     def __init__(self, reader):
         self.reader = reader
         c = self.reader.read(1)
         self.current_char = c if c else None
         self.position = 1
+
     def get_position(self):
         return self.position
 
@@ -29,10 +27,7 @@ class Tokenizer:
                 return
 
     def munch(self, c):
-        ch = self.peek(False)
-
         if self.peek(False) != c:
-            raise ValueError(
-                f"Munching error at character position {self.position}")
+            raise ValueError(f"Munching error at character position {self.position}")
         else:
             self.advance(True)
